@@ -24,8 +24,18 @@ def makeMove(boardid):
 	#TODO: Sanity check, is move valid
 	row = int(move['moveTo'][0])
 	col = int(move['moveTo'][1])
+	if (row < 0 or row > 7) or (col < 0 or col > 7):
+		abort(400)
+
 	games[boardid][row][col] = move['piece']
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK 
+
+def checkBoard():
+	#Check pawn
+	#	- Turn == 1 then check 1 or 2 spaces, other turns check 1 space ahead. Check if left or right is occupied (and allow movement)
+	
+	#Check  
+
 
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
