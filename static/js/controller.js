@@ -49,6 +49,7 @@ var tryMove = function(source, target, color) {
 			board.move(source + '-' + target);
 		},
 		error: function(e) {
+			board.position(position);
 			board.update();
 			console.log("Server returned a "+ e.status +" "+ e.statusText);
 			if(e.status == 404) {
