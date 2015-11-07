@@ -4,14 +4,39 @@ app = Flask(__name__)
 
 sideLen = 8
 numGames = 100
+boardState = []
+boardLayout = [ 
+'BR','Bk','BB','BQ','BK','BB','Bk','BR',
+'BP','BP','BP','BP','BP','BP','BP','BP',
+'  ','  ','  ','  ','  ','  ','  ','  ',
+'  ','  ','  ','  ','  ','  ','  ','  ',
+'  ','  ','  ','  ','  ','  ','  ','  ',
+'  ','  ','  ','  ','  ','  ','  ','  ',
+'WP','WP','WP','WP','WP','WP','WP','WP',
+'WR','Wk','WB','WK','WQ','WB','Wk','WR']
+
 games = [[[' ' for _ in range(sideLen)] for _ in range(sideLen)] for _ in range(numGames)] # init 100, 8 x 8 boards
 
 @app.route('/')
 def index():
 	return "Please refer to our API"
 
+@app.route('/games/<int:boardid>/init', methods=['GET'])
+def initBoard(boardid):
+	if boardid < 0  or boardid > 99:
+		return "404 - Please enter a board number between 0 and 99"
+	idx = 0
+	for r in range(0,sideLen):
+		for c in range(0,sideLen):
+			games[boardid][r][c] = boardLayout[idx]
+			idx += 1	
+	return "Board created!"
+
 @app.route('/games/<int:boardid>/move', methods=['POST'])
 def makeMove(boardid):
+	if boardid < 0  or boardid > 99:
+		return "404 - Please enter a board number between 0 and 99"
+	
 	if not request.json:
 		abort(400)
 
