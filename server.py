@@ -109,56 +109,51 @@ def makeMove(boardid):
 
 	if checkMove(games[boardid], move):
 		moveFrom = games[boardid].convert(move['moveFrom'])
-		print moveFrom
 		moveTo = games[boardid].convert(move['moveTo'])
-		print moveTo
 
-		pp = games[boardid].getPiece(moveFrom[0], moveFrom[1])
-		print pp
-		games[boardid].setPiece(moveTo[0], moveTo[1], pp)
+		piece = games[boardid].getPiece(moveFrom[0], moveFrom[1])
+
+		games[boardid].setPiece(moveTo[0], moveTo[1], piece)
 		games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
 	else:
-		abort(400)
+		return jsonify({'err': 'Bad move'}), 406
 
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
-def getPiece(board, position):
-	return board[7 - position[1]][position[0]]
-
 def checkMove(game, move):
-	return True
 	#move    = x position,               y position
-	moveFrom = int(move['moveFrom'][0]), int(move['moveFrom'][1])
-	moveTo   = int(move['moveTo'][0]),   int(move['moveTo'][1])
+	moveFrom = game.convert(move['moveFrom'])
+	moveTo   = game.convert(move['moveTo'])
 
-	# Check the moveFrom index
-	if (moveFrom[0] < 0 or moveFrom[0] > 7) or (moveFrom[1] < 0 or moveFrom[1] > 7):
-		print "Out of bounds"
+	piece = game.getPiece(moveFrom[0], moveFrom[1])
+
+	if not piece:
 		return False
-
-	# Check the moveTo index
-	if (moveTo[0] < 0 or moveTo[0] > 7) or (moveTo[1] < 0 or moveTo[1] > 7):
-		print "Out of bounds"
-		return False
-
-	piece = getPiece(board, moveFrom)
 
 	color = piece[0]
-	if color != 'W' or color != 'B':
+
+	print moveFrom
+	print moveTo
+	print piece
+
+	if color != 'W' and color != 'B':
 		print "Color is wrong somehow"
 		return False
 
 	type = piece[1]
 	if type == 'K':
 		# checks for King
+		print "check king"
 		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
 	if type == 'Q':
 		# checks for Queen
+		print "check queen"
 		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
 	if type == 'k':
 		# checks for Knight
+		print "check knight"
 		xDiff = abs(moveTo[0], moveFrom[0])
 		yDiff = abs(moveTo[1], moveFrom[1])
 
@@ -175,14 +170,17 @@ def checkMove(game, move):
 
 	if type == 'B':
 		# checks for Bishop
+		print "check bishop"
 		return checkDiagonal(moveFrom, moveTo)
 
 	if type == 'R':
 		# checks for Rook
+		print "check rook"
 		return checkOrthogonal(moveFrom, moveTo)
 
 	if type == 'P':
 		# Check white pawn
+		print "check pawn"
 		if color == 'W':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				return False
@@ -222,8 +220,8 @@ def checkMove(game, move):
 	return True
 
 def checkDiagonal(moveFrom, moveTo):
-	xDiff = abs(moveTo[0], moveFrom[0])
-	yDiff = abs(moveTo[1], moveFrom[1])
+	xDiff = abs(moveTo[0] - moveFrom[0])
+	yDiff = abs(moveTo[1] - moveFrom[1])
 
 	if xDiff == 0 and yDiff == 0:
 		return False
@@ -234,8 +232,8 @@ def checkDiagonal(moveFrom, moveTo):
 	return True
 
 def checkOrthogonal(moveFrom, moveTo):
-	xDiff = abs(moveTo[0], moveFrom[0])
-	yDiff = abs(moveTo[1], moveFrom[1])
+	xDiff = abs(moveTo[0] - moveFrom[0])
+	yDiff = abs(moveTo[1] - moveFrom[1])
 
 	if xDiff == 0 and yDiff == 0:
 		return False
