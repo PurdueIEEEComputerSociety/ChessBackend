@@ -69,7 +69,7 @@ def makeMove(boardid):
 		abort(400)
 
 	move = {
-		'id' : request.json['id']
+		'id' : request.json['id'],
 		'moveFrom': request.json['moveFrom'],
 		'moveTo': request.json['moveTo']
 	}
@@ -99,7 +99,6 @@ def checkMove(board, move):
 	moveFrom = int(move['moveFrom'][0]), int(move['moveFrom'][1])
 	moveTo   = int(move['moveTo'][0]),   int(move['moveTo'][1])
 
-
 	# Check the moveFrom index
 	if (moveFrom[0] < 0 or moveFrom[0] > 7) or (moveFrom[1] < 0 or moveFrom[1] > 7):
 		print "Out of bounds"
@@ -113,25 +112,30 @@ def checkMove(board, move):
 	piece = getPiece(board, moveFrom)
 
 	color = piece[0]
-	if color not 'W' or color not'B':
+	if color is not 'W' or color is not 'B':
 		print "Color is wrong somehow"
 		return False
 
 	type = piece[1]
 	if type is 'K':
 		# checks for King
+		return True
 
 	if type is 'Q':
 		# checks for Queen
+		return True
 
 	if type is 'k':
 		# checks for Knight
+		return True
 
 	if type is 'B':
 		# checks for Bishop
+		return True
 
 	if type is 'R':
 		# checks for Rook
+		return True
 
 	if type is 'P':
 		# Check white pawn
@@ -142,9 +146,9 @@ def checkMove(board, move):
 			# if white pawn is in starting pos
 			if moveFrom[1] == 1:
 				# white pawn can move to pos y + 1 or y + 2 (move up the board)
-				if moveTo[1] != moveFrom[1] + 1 && moveTo[1] != moveFrom[1] + 2:
+				if moveTo[1] != moveFrom[1] + 1 and moveTo[1] != moveFrom[1] + 2:
 					return False
-			elif:
+			else:
 				# white pawn is not in starting pos, so can only move to y + 1
 				if moveTo[1] != moveFrom[1] + 1:
 					return False
@@ -158,9 +162,9 @@ def checkMove(board, move):
 			# if black pawn is in starting pos
 			if moveFrom[1] == 6:
 				# black pawn can move to pos y - 1 or y - 2 (move down the board)
-				if moveTo[1] != moveFrom[1] - 1 && moveTo[1] != moveFrom[1] - 2:
+				if moveTo[1] != moveFrom[1] - 1 and moveTo[1] != moveFrom[1] - 2:
 					return False
-			elif:
+			else:
 				# black pawn is not in starting pos, so can only move to y - 1
 				if moveTo[1] != moveFrom[1] - 1:
 					return False
@@ -177,10 +181,10 @@ def checkDiagonal(moveFrom, moveTo):
 	xDiff = abs(moveTo[0], moveFrom[0])
 	yDiff = abs(moveTo[1], moveFrom[1])
 
-	if xDiff == 0 && yDiff == 0
+	if xDiff == 0 and yDiff == 0:
 		return False
 
-	if xDiff == yDiff
+	if xDiff == yDiff:
 		return False
 
 	return True
@@ -189,10 +193,10 @@ def checkOrthogonal(moveFrom, moveTo):
 	xDiff = abs(moveTo[0], moveFrom[0])
 	yDiff = abs(moveTo[1], moveFrom[1])
 
-	if xDiff == 0 && yDiff == 0
+	if xDiff == 0 and yDiff == 0:
 		return False
 
-	if xDiff != 0 && yDiff != 0
+	if xDiff != 0 and yDiff != 0:
 		return False
 
 	return True
