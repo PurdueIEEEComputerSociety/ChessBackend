@@ -136,7 +136,7 @@ def checkMove(game, move):
 	print moveTo
 	print piece
 
-	if color != 'W' and color != 'B':
+	if color != 'w' and color != 'b':
 		print "Color is wrong somehow"
 		return False
 
@@ -151,7 +151,7 @@ def checkMove(game, move):
 		print "check queen"
 		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
-	if type == 'k':
+	if type == 'N':
 		# checks for Knight
 		print "check knight"
 		xDiff = abs(moveTo[0], moveFrom[0])
@@ -181,7 +181,7 @@ def checkMove(game, move):
 	if type == 'P':
 		# Check white pawn
 		print "check pawn"
-		if color == 'W':
+		if color == 'w':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				return False
 
@@ -197,7 +197,7 @@ def checkMove(game, move):
 
 			return True
 
-		elif color == 'B':
+		elif color == 'b':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				return False
 
