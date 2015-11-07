@@ -254,7 +254,7 @@ def boardStatus(boardid):
 		#boardString += '|'
 		for c in range(0,sideLen):
 			#boardString +='%s:%s |' % (games[boardid].revert((r, c)), games[boardid].board[r][c])
-			boardString[0][games[boardid].revert((r, c))] = games[boardid].board[r][c]
+			boardString[0][games[boardid].revert((7-c, 7-r))] = games[boardid].board[r][c]
 		#boardString += '<br/>'
 
 	return jsonify(boardString[0]), 201
