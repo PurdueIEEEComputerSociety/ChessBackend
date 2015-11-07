@@ -33,7 +33,7 @@ class game:
 
 
 boardLayout = [
-	'bR','bN','bB','bQ','bK','bB','bN','bR',
+	'bR','bN','bB','bK','bQ','bB','bN','bR',
 	'bP','bP','bP','bP','bP','bP','bP','bP',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
@@ -63,7 +63,7 @@ def send_css(path):
 
 @app.route('/img/<path:path>')
 def send_img(path):
-    return send_from_directory('static/img', path)	
+    return send_from_directory('static/img', path)
 
 @app.route('/games/<int:boardid>/init', methods=['GET'])
 def initBoard(boardid):
@@ -140,7 +140,7 @@ def checkMove(game, move):
 	print moveTo
 	print piece
 
-	if color != 'W' and color != 'B':
+	if color != 'w' and color != 'b':
 		print "Color is wrong somehow"
 		return False
 
@@ -155,7 +155,7 @@ def checkMove(game, move):
 		print "check queen"
 		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
-	if type == 'k':
+	if type == 'N':
 		# checks for Knight
 		print "check knight"
 		xDiff = abs(moveTo[0], moveFrom[0])
@@ -185,7 +185,7 @@ def checkMove(game, move):
 	if type == 'P':
 		# Check white pawn
 		print "check pawn"
-		if color == 'W':
+		if color == 'w':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				return False
 
@@ -201,7 +201,7 @@ def checkMove(game, move):
 
 			return True
 
-		elif color == 'B':
+		elif color == 'b':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				return False
 
@@ -258,7 +258,7 @@ def boardStatus(boardid):
 		#boardString += '|'
 		for c in range(0,sideLen):
 			#boardString +='%s:%s |' % (games[boardid].revert((r, c)), games[boardid].board[r][c])
-			boardString[0][games[boardid].revert((r, c))] = games[boardid].board[r][c]
+			boardString[0][games[boardid].revert((7-c, 7-r))] = games[boardid].board[r][c]
 		#boardString += '<br/>'
 
 	return jsonify(boardString[0]), 201
