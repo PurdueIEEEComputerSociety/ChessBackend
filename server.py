@@ -70,12 +70,13 @@ def initBoard(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
 
-	returnMessage = ""
+	returnMessage = [{}]
 
 	if games[boardid].boardState == 0:
 		games[boardid].boardState += 1
 		games[boardid].player1 = hex(randint(0, 43046721))
-		returnMessage += games[boardid].player1
+		returnMessage[0]['id'] = games[boardid].player1
+		returnMessage[0]['color'] = 'W'
 
 	elif games[boardid].boardState == 1:
 		games[boardid].boardState += 1
@@ -85,15 +86,16 @@ def initBoard(boardid):
 				games[boardid].board[r][c] = boardLayout[idx]
 				idx += 1
 		games[boardid].player2 = hex(randint(0, 43046721))
-		returnMessage += games[boardid].player2
-
+		returnMessage[0]['id'] = games[boardid].player2
+		returnMessage[0]['color'] = 'B'
 	else:
 		print "Board used, refused"
-		return jsonify({'err': 'Board in use'}), 423
+		returnMessage[0]['err'] = "Board is being used"
+		return jsonify(returnMessage[0]), 423
 
-	print "Init on board " + str(boardid) + " was made, giving user message: " + returnMessage
+	#print "Init on board " + str(boardid) + " was made, giving user message: " + returnMessage
 
-	return jsonify({'id':returnMessage}), 201
+	return jsonify(returnMessage[0]), 201
 
 @app.route('/games/<int:boardid>/move', methods=['POST'])
 def makeMove(boardid):
@@ -256,11 +258,8 @@ def boardStatus(boardid):
 	#Stringify the board and return it
 	boardString = [{}]
 	for r in range(0,sideLen):
-		#boardString += '|'
 		for c in range(0,sideLen):
-			#boardString +='%s:%s |' % (games[boardid].revert((r, c)), games[boardid].board[r][c])
 			boardString[0][games[boardid].revert((7-c, 7-r))] = games[boardid].board[r][c]
-		#boardString += '<br/>'
 
 	return jsonify(boardString[0]), 201
 
