@@ -112,34 +112,46 @@ def checkMove(board, move):
 	piece = getPiece(board, moveFrom)
 
 	color = piece[0]
-	if color is not 'W' or color is not 'B':
+	if color != 'W' or color != 'B':
 		print "Color is wrong somehow"
 		return False
 
 	type = piece[1]
-	if type is 'K':
+	if type == 'K':
 		# checks for King
-		return True
+		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
-	if type is 'Q':
+	if type == 'Q':
 		# checks for Queen
-		return True
+		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
-	if type is 'k':
+	if type == 'k':
 		# checks for Knight
+		xDiff = abs(moveTo[0], moveFrom[0])
+		yDiff = abs(moveTo[1], moveFrom[1])
+
+		if xDiff == 0 and yDiff == 0:
+			return False
+		# if the xDiff was 3 away, y must be 2 to be a correct move
+		if xDiff == 3 and yDiff != 2:
+			return False
+		# if the xDiff was 2 away, y must be 3 to be a correct move
+		elif xDiff == 2 and yDiff != 3:
+			return False
+
 		return True
 
-	if type is 'B':
+	if type == 'B':
 		# checks for Bishop
-		return True
+		return checkDiagonal(moveFrom, moveTo)
 
-	if type is 'R':
+	if type == 'R':
 		# checks for Rook
-		return True
+		return checkOrthogonal(moveFrom, moveTo)
 
-	if type is 'P':
+	if type == 'P':
 		# Check white pawn
-		if color is 'W':
+		if color == 'W':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				return False
 
@@ -155,7 +167,7 @@ def checkMove(board, move):
 
 			return True
 
-		elif color is 'B':
+		elif color == 'B':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				return False
 
