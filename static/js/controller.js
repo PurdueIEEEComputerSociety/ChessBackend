@@ -19,7 +19,6 @@ var onDrop = function(source, target, piece, newPos, oldPos, orientation) {
 
 var cfg = {
 	draggable: true,
-	position: 'start',
 	onDrop: onDrop,
 	sparePieces: false
 };
@@ -50,11 +49,18 @@ var board = ChessBoard('board1', cfg);
 var getBoard = function() {
 	var statusRequest = $.get( baseURL + "/games/"+boardID+"/status", function(data) {
 		board.clear();
+		$.each(data, function(key, value){
+			if (value == "  " || value === null){
+				delete data[key];
+			}
+			console.log("Key: " + key + " Value: " + value)
+		});
 		position = data;
 		console.log(data);
+		board.position(position);
 	})
 	.done(function() {
-		board.position(position);
+		
 	})
 	.fail(function() {
 		
@@ -68,5 +74,12 @@ var getBoard = function() {
 var initBoard = function() {
 	var statusRequest = $.get( baseURL + "/games/"+boardID+"/init", function(data) {
 		console.log("Successfull Initialized");
-	})	
+	})
+	.fail(function(e) {
+		console.log(e.status);
+		if(e.status == 423) console.log("Board has been started and has been locked from new inits.")
+	})
 }
+board.update = getBoard;
+board.init = initBoard;
+
