@@ -7,11 +7,12 @@ sideLen = 8
 numGames = 100
 
 class game:
-	player1 = ''
-	player2 = ''
-	turn = 0
-	boardState = 0
-	board =[[' ' for _ in range(sideLen)] for _ in range(sideLen)]
+	def __init__(self):
+		self.player1 = ''
+		self.player2 = ''
+		self.turn = 0
+		self.boardState = 0
+		self.board = [[' ' for _ in range(sideLen)] for _ in range(sideLen)]
 
 boardLayout = [ 
 	'BR','Bk','BB','BQ','BK','BB','Bk','BR',
@@ -87,7 +88,7 @@ def checkBoard():
 	#	- Turn == 1 then check 1 or 2 spaces, other turns check 1 space ahead. Check if left or right is occupied (and allow movement)
 	
 	#Check  
-
+	print "hi"
 
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
