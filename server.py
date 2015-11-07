@@ -33,7 +33,7 @@ class game:
 
 
 boardLayout = [
-	'bR','bN','bB','bQ','bK','bB','bN','bR',
+	'bR','bN','bB','bK','bQ','bB','bN','bR',
 	'bP','bP','bP','bP','bP','bP','bP','bP',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
@@ -59,7 +59,7 @@ def send_css(path):
 
 @app.route('/img/<path:path>')
 def send_img(path):
-    return send_from_directory('static/img', path)	
+    return send_from_directory('static/img', path)
 
 @app.route('/games/<int:boardid>/init', methods=['GET'])
 def initBoard(boardid):
