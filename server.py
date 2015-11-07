@@ -101,7 +101,7 @@ def makeMove(boardid):
 		return "404 - Please enter a board number between 0 and 99"
 
 	if not request.json:
-		abort(400)
+		return jsonify({'err': 'Not json type'}), 400
 
 	move = {
 		'id' : request.json['id'],
@@ -158,19 +158,20 @@ def checkMove(game, move):
 	if type == 'N':
 		# checks for Knight
 		print "check knight"
-		xDiff = abs(moveTo[0], moveFrom[0])
-		yDiff = abs(moveTo[1], moveFrom[1])
+		xDiff = abs(moveTo[0] - moveFrom[0])
+		yDiff = abs(moveTo[1] - moveFrom[1])
+		print (xDiff, yDiff)
 
 		if xDiff == 0 and yDiff == 0:
 			return False
 		# if the xDiff was 3 away, y must be 2 to be a correct move
-		if xDiff == 3 and yDiff != 2:
-			return False
+		if xDiff == 2 and yDiff == 1:
+			return True
 		# if the xDiff was 2 away, y must be 3 to be a correct move
-		elif xDiff == 2 and yDiff != 3:
-			return False
+		elif xDiff == 1 and yDiff == 2:
+			return True
 
-		return True
+		return False
 
 	if type == 'B':
 		# checks for Bishop
@@ -230,7 +231,7 @@ def checkDiagonal(moveFrom, moveTo):
 	if xDiff == 0 and yDiff == 0:
 		return False
 
-	if xDiff == yDiff:
+	if xDiff != yDiff:
 		return False
 
 	return True
