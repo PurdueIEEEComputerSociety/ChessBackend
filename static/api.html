@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" style="background: #d3d3d3;">
+  <head>
+    <!-- Basic Page Needs
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>PIEEE Chess</title>
+    <meta name="description" content="Chess++ API">
+    <meta name="author" content="John Lee">
+
+    <!-- Mobile Specific Metas
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/chessboard-0.3.0.css">
+
+    <!-- Scripts
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="js/chessboard-0.3.0.min.js"></script>
+
+  </head>
+  <body style="background: #d3d3d3;">
+
+  <div class="title" style="color: #333;">Chess++ API</div>
+<table cellspacing="0">
+<thead>
+
+</thead>
+<thead>
+<tr>
+  <th><h2>GET Requests</h2></th>
+  <th></th>
+  <th></th>
+  <th></th>
+  <th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <th>Location : Parameter</th>
+  <th>Type</th>
+  <th>Required</th>
+  <th>Parameter</th>
+  <th>Description</th>
+  <th>Example Output</th>
+</tr>
+<tr id="">
+  <td>
+    <p><code>status</code></p>
+  </td>
+  <td>JSON</td>
+  <td>n/a</td>
+  <td>
+    <code>verbose</code>
+    <br>
+  </td>
+  <td>
+    <p>Returns the board and all of its contents.</p>
+  </td>
+  <td>
+  <code>{
+    a4: 'bK',
+    c4: 'wK',
+    a7: 'wR'
+  }</code>
+  </td>
+</tr>
+<tr id="">
+  <td><code>status<br>:<br>verbose</code>
+  </td>
+  <td>JSON</td>
+  <td>No</td>
+  <td>
+    <code>[true|false]</code>
+  </td>
+  <td>
+    <p>Returns the entire board including empty spaces.</p>
+  </td>
+  <td>
+  <code>{ a1: '', a2: 'bK',  h7: '', h8: 'wP' }</code>
+  </td>
+</tr>
+<tr id="">
+  <td>
+    <p><code>init</code></p>
+  </td>
+  <td>JSON</td>
+  <td>n/a</td>
+  <td>
+    <code>n/a</code>
+    <br>
+  </td>
+  <td>
+    <p>Initializes a board with another user. Required for initial handshake. <br><br>Returned value is an ID that must be passed with all POST requests.</p>
+  </td>
+  <td>
+  <code>{ id: "0F3B71" }</code>
+  </td>
+</tr>
+<thead>
+<tr>
+  <th><h2>POST Requests</h2></th>
+  <th></th>
+  <th></th>
+  <th></th>
+  <th></th>
+</tr>
+
+</thead>
+<tr>
+  <th>Location</th>
+  <th>Type</th>
+  <th>Required</th>
+  <th>Parameters</th>
+  <th>Description</th>
+  <th>Example</th>
+</tr>
+<tr id="">
+  <td>
+    <p><code>move</code></p>
+  </td>
+  <td>n/a</td>
+  <td><code>false</code></td>
+  <td style="text-align: left">
+    <code>id | moveFrom | moveTo</code>
+    <br><br>Success Code: <br>201 - Success
+    <br><br>Error Code: <br>404 - Incorrect Board Number
+    <br>400 - Invalid Request
+
+  </td>
+  <td>
+    Attempts to move a piece from a source to destination.
+  </td>
+  <td>
+    <code>{id: "1A3F20", moveFrom: "d1", moveTo: "d3"}</code>
+  </td>
+</tr>
+</tbody>
+</table>
+
+
+    </div>
+    <script type="application/javascript">
+    </script>
+    <script src=""></script>
+  </body>
+</html>

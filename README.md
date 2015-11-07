@@ -11,7 +11,7 @@ The server will now be bound to port 5000 on your localhost
 ##Usage
 Currently the only 2 interactive endpoints are /games/<ID>/move and /games/<ID>/status where <ID> is a value 0-99 which is the id of a game
 
-The move endpoint requires a POST request from the client with a JSON object containing the piece name. We use the code color [W|B] with piece first letter [K|Q|k|B|R|P]. Here knight is lowercase k
+The move endpoint requires a POST request from the client with a JSON object containing the piece name. We use the code color [W|B] with piece first letter [K|Q|N|B|R|P]. Here knight is N
 The 2nd part of the JSON object is our move to location with the breakdown [row 0-8][col 0-8]
 
 At the status endpoint your browser makes a GET request for the status of the specified board, The returned board is a CSV (on |) layout of that board

@@ -1,5 +1,5 @@
 from random import randint
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, url_for, send_from_directory, render_template
 
 app = Flask(__name__)
 
@@ -12,7 +12,7 @@ class game:
 		self.player2 = ''
 		self.turn = 0
 		self.boardState = 0
-		self.board = [[' ' for _ in range(sideLen)] for _ in range(sideLen)]
+		self.board = [['' for _ in range(sideLen)] for _ in range(sideLen)]
 
 	def getPiece(self, x, y):
 		if (0 <= x <= 7) and (0 <= y <= 7):
@@ -33,21 +33,33 @@ class game:
 
 
 boardLayout = [
-	'BR','Bk','BB','BQ','BK','BB','Bk','BR',
-	'BP','BP','BP','BP','BP','BP','BP','BP',
+	'bR','bN','bB','bQ','bK','bB','bN','bR',
+	'bP','bP','bP','bP','bP','bP','bP','bP',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
-	'WP','WP','WP','WP','WP','WP','WP','WP',
-	'WR','Wk','WB','WK','WQ','WB','Wk','WR'
+	'wP','wP','wP','wP','wP','wP','wP','wP',
+	'wR','wN','wB','wK','wQ','wB','wN','wR'
 ]
 
 games = [ game() for i in range(numGames)]
 
 @app.route('/')
 def index():
-	return "Please refer to our API"
+	return app.send_static_file('index.html')
+
+@app.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('static/js', path)
+
+@app.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory('static/css', path)
+
+@app.route('/img/<path:path>')
+def send_img(path):
+    return send_from_directory('static/img', path)	
 
 @app.route('/games/<int:boardid>/init', methods=['GET'])
 def initBoard(boardid):
