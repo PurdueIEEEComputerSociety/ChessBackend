@@ -16,32 +16,86 @@ def makeMove(boardid):
 		abort(400)
 
 	move = {
-		'id' : 0,
-		'piece': request.json['piece'],
+		'id' : request.json['id']
+		'moveFrom': request.json['moveFrom'],
 		'moveTo': request.json['moveTo']
 	}
 	#.append(move) We should add this object to a list of previous moves
 	#TODO: Sanity check, is move valid
-	row = int(move['moveTo'][0])
-	col = int(move['moveTo'][1])
-	if (row < 0 or row > 7) or (col < 0 or col > 7):
+	board = games[boardid]
+
+	if checkMove(board, move):
+		moveFromRow = int(move['moveFrom'][0])
+		moveFromCol = int(move['moveFrom'][1])
+
+		moveToRow = int(move['moveTo'][0])
+		moveToCol = int(move['moveTo'][1])
+
+		board[moveToRow][moveToCol] = board[moveFromRow][moveFromCol]
+		board[moveFromRow][moveFromCol] = ''
+	else:
 		abort(400)
 
-	games[boardid][row][col] = move['piece']
-	return jsonify({'move': move}), 201 #Return JSON move followed by OK 
+	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
-def checkBoard():
-	#Check pawn
-	#	- Turn == 1 then check 1 or 2 spaces, other turns check 1 space ahead. Check if left or right is occupied (and allow movement)
-	
-	#Check  
+def checkMove(board, move):
+	moveFromRow = int(7 - move['moveFrom'][0])
+	moveFromCol = int(move['moveFrom'][1])
 
+	moveToRow = int(7 - move['moveTo'][0])
+	moveToCol = int(move['moveTo'][1])
+
+	piece = board[moveFromRow][moveFromCol]
+
+	if (row < 0 or row > 7) or (col < 0 or col > 7):
+		print "Out of bounds"
+		return False
+
+	color = piece[0]
+	if color not 'W' or color not'B':
+		print "Color is wrong somehow"
+		return False
+
+	type = piece[1]
+	if type is 'K':
+		# checks for king
+
+	if type is 'Q':
+		# checks for Queen
+
+	if type is 'k'
+		# checks for Knight
+
+	if type is 'B'
+		# checks for bishop
+
+	if type is 'R'
+		# checks for rook
+
+	if type is 'P':
+		# checks for pawn
+
+	return True
+
+def checkDiagonal(moveFrom, moveTo):
+
+
+
+
+	return True
+
+def checkOrthogonal(moveFrom, moveTo):
+
+
+
+
+	return True
 
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
-	
+
 	#Stringify the board and return it
 	boardString = ''
 	for r in range(0,sideLen):
@@ -49,8 +103,8 @@ def boardStatus(boardid):
 		for c in range(0,sideLen):
 			boardString += '%s |' % (games[boardid][r][c])
 		boardString += '<br/>'
- 
+
 	return boardString
 
 if __name__ == '__main__':
-    app.run(debug=True)
+	app.run(debug=True)
