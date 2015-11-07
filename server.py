@@ -14,7 +14,7 @@ class game:
 		self.boardState = 0
 		self.board = [[' ' for _ in range(sideLen)] for _ in range(sideLen)]
 
-boardLayout = [ 
+boardLayout = [
 	'BR','Bk','BB','BQ','BK','BB','Bk','BR',
 	'BP','BP','BP','BP','BP','BP','BP','BP',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
@@ -35,6 +35,7 @@ def index():
 def initBoard(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
+
 	returnMessage = ""
 
 	if games[boardid].boardState == 0:
@@ -52,49 +53,160 @@ def initBoard(boardid):
 		games[boardid].player2 = hex(randint(0, 43046721))
 		returnMessage += games[boardid].player2
 
-	else: 
+	else:
 		print "Board used, refused"
 		return jsonify({'err': 'Board in use'}), 423
 
 	print "Init on board " + str(boardid) + " was made, giving user message: " + returnMessage
- 	
+
 	return jsonify({'id':returnMessage}), 201
 
 @app.route('/games/<int:boardid>/move', methods=['POST'])
 def makeMove(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
-	
+
 	if not request.json:
 		abort(400)
 
 	move = {
-		'id' : 0,
-		'piece': request.json['piece'],
+		'id' : request.json['id'],
+		'moveFrom': request.json['moveFrom'],
 		'moveTo': request.json['moveTo']
 	}
 	#.append(move) We should add this object to a list of previous moves
 	#TODO: Sanity check, is move valid
-	row = int(move['moveTo'][0])
-	col = int(move['moveTo'][1])
-	if (row < 0 or row > 7) or (col < 0 or col > 7):
+	board = games[boardid]
+
+	if checkMove(board, move):
+		moveFromRow = int(7-move['moveFrom'][0])
+		moveFromCol = int(move['moveFrom'][1])
+
+		moveToRow = int(7-move['moveTo'][0])
+		moveToCol = int(move['moveTo'][1])
+
+		board[moveToRow][moveToCol] = board[moveFromRow][moveFromCol]
+		board[moveFromRow][moveFromCol] = ''
+	else:
 		abort(400)
 
-	games[boardid][row][col] = move['piece']
-	return jsonify({'move': move}), 201 #Return JSON move followed by OK 
+	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
-def checkBoard():
-	#Check pawn
-	#	- Turn == 1 then check 1 or 2 spaces, other turns check 1 space ahead. Check if left or right is occupied (and allow movement)
-	
-	#Check  
-	print "hi"
+def getPiece(board, position):
+	return board[7 - position[1]][position[0]]
+
+def checkMove(board, move):
+	#move    = x position,               y position
+	moveFrom = int(move['moveFrom'][0]), int(move['moveFrom'][1])
+	moveTo   = int(move['moveTo'][0]),   int(move['moveTo'][1])
+
+	# Check the moveFrom index
+	if (moveFrom[0] < 0 or moveFrom[0] > 7) or (moveFrom[1] < 0 or moveFrom[1] > 7):
+		print "Out of bounds"
+		return False
+
+	# Check the moveTo index
+	if (moveTo[0] < 0 or moveTo[0] > 7) or (moveTo[1] < 0 or moveTo[1] > 7):
+		print "Out of bounds"
+		return False
+
+	piece = getPiece(board, moveFrom)
+
+	color = piece[0]
+	if color is not 'W' or color is not 'B':
+		print "Color is wrong somehow"
+		return False
+
+	type = piece[1]
+	if type is 'K':
+		# checks for King
+		return True
+
+	if type is 'Q':
+		# checks for Queen
+		return True
+
+	if type is 'k':
+		# checks for Knight
+		return True
+
+	if type is 'B':
+		# checks for Bishop
+		return True
+
+	if type is 'R':
+		# checks for Rook
+		return True
+
+	if type is 'P':
+		# Check white pawn
+		if color is 'W':
+			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
+				return False
+
+			# if white pawn is in starting pos
+			if moveFrom[1] == 1:
+				# white pawn can move to pos y + 1 or y + 2 (move up the board)
+				if moveTo[1] != moveFrom[1] + 1 and moveTo[1] != moveFrom[1] + 2:
+					return False
+			else:
+				# white pawn is not in starting pos, so can only move to y + 1
+				if moveTo[1] != moveFrom[1] + 1:
+					return False
+
+			return True
+
+		elif color is 'B':
+			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
+				return False
+
+			# if black pawn is in starting pos
+			if moveFrom[1] == 6:
+				# black pawn can move to pos y - 1 or y - 2 (move down the board)
+				if moveTo[1] != moveFrom[1] - 1 and moveTo[1] != moveFrom[1] - 2:
+					return False
+			else:
+				# black pawn is not in starting pos, so can only move to y - 1
+				if moveTo[1] != moveFrom[1] - 1:
+					return False
+
+			return True
+
+		else:
+			return False
+
+
+	return True
+
+def checkDiagonal(moveFrom, moveTo):
+	xDiff = abs(moveTo[0], moveFrom[0])
+	yDiff = abs(moveTo[1], moveFrom[1])
+
+	if xDiff == 0 and yDiff == 0:
+		return False
+
+	if xDiff == yDiff:
+		return False
+
+	return True
+
+def checkOrthogonal(moveFrom, moveTo):
+	xDiff = abs(moveTo[0], moveFrom[0])
+	yDiff = abs(moveTo[1], moveFrom[1])
+
+	if xDiff == 0 and yDiff == 0:
+		return False
+
+	if xDiff != 0 and yDiff != 0:
+		return False
+
+	return True
 
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
-	
+
 	#Stringify the board and return it
 	boardString = ''
 	for r in range(0,sideLen):
@@ -102,8 +214,8 @@ def boardStatus(boardid):
 		for c in range(0,sideLen):
 			boardString += '%s |' % (games[boardid].board[r][c])
 		boardString += '<br/>'
- 
+
 	return boardString
 
 if __name__ == '__main__':
-    app.run(debug=True)
+	app.run(debug=True)
