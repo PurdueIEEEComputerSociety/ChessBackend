@@ -14,6 +14,24 @@ class game:
 		self.boardState = 0
 		self.board = [[' ' for _ in range(sideLen)] for _ in range(sideLen)]
 
+	def getPiece(self, x, y):
+		if (0 <= x <= 7) and (0 <= y <= 7):
+			return self.board[7-y][x]
+		return ""
+
+	def setPiece(self, x, y, piece):
+		if (0 <= x <= 7) and (0 <= y <= 7):
+			self.board[7-y][x-0] = piece
+
+	def convert(self, move):
+		return ord(move[0].lower()) - 97, int(move[1]) - 1 # value of 'a' is 97
+
+	def revert(self, move):
+		if (1 <= move[0] <= 8) and (1 <= move[1] <= 8):
+			return chr(move[0] + 97) + str(move[1] + 1)
+
+
+
 boardLayout = [
 	'BR','Bk','BB','BQ','BK','BB','Bk','BR',
 	'BP','BP','BP','BP','BP','BP','BP','BP',
@@ -76,17 +94,17 @@ def makeMove(boardid):
 	}
 	#.append(move) We should add this object to a list of previous moves
 	#TODO: Sanity check, is move valid
-	board = games[boardid]
 
-	if checkMove(board, move):
-		moveFromRow = int(7-move['moveFrom'][0])
-		moveFromCol = int(move['moveFrom'][1])
+	if checkMove(games[boardid], move):
+		moveFrom = games[boardid].convert(move['moveFrom'])
+		print moveFrom
+		moveTo = games[boardid].convert(move['moveTo'])
+		print moveTo
 
-		moveToRow = int(7-move['moveTo'][0])
-		moveToCol = int(move['moveTo'][1])
-
-		board[moveToRow][moveToCol] = board[moveFromRow][moveFromCol]
-		board[moveFromRow][moveFromCol] = ''
+		pp = games[boardid].getPiece(moveFrom[0], moveFrom[1])
+		print pp
+		games[boardid].setPiece(moveTo[0], moveTo[1], pp)
+		games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
 	else:
 		abort(400)
 
@@ -95,7 +113,8 @@ def makeMove(boardid):
 def getPiece(board, position):
 	return board[7 - position[1]][position[0]]
 
-def checkMove(board, move):
+def checkMove(game, move):
+	return True
 	#move    = x position,               y position
 	moveFrom = int(move['moveFrom'][0]), int(move['moveFrom'][1])
 	moveTo   = int(move['moveTo'][0]),   int(move['moveTo'][1])
