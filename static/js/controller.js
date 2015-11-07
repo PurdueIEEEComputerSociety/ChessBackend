@@ -24,23 +24,40 @@ var cfg = {
 };
 
 var tryMove = function(source, target, color) {
-	var moveRequest = $.post( baseURL + "/games/"+boardID+"/move", {id: playerID, moveFrom: source, moveTo: target}, function(data) {
-		board.move(source + '-' + target);
-	})
-	.fail(function(e) {
-		console.log("Server returned a "+ e.status +" "+ e.statusText);
-		if(e.status == 404) {
-			console.log("Board or Page does not exist");
+	// var moveRequest = $.post( baseURL + "/games/"+boardID+"/move", {'id': playerID, 'moveFrom': source, 'moveTo': target}, function(data) {
+	// 	board.move(source + '-' + target);
+	// })
+	// .fail(function(e) {
+	// 	console.log("Server returned a "+ e.status +" "+ e.statusText);
+	// 	if(e.status == 404) {
+	// 		console.log("Board or Page does not exist");
+	// 	}
+	// 	else if(e.status == 400) {
+	// 		console.log("Incorrect Move");
+	// 	}
+	// })
+	// .always(function() {
+	// 	console.log(typeof(JSON.stringify({'id': playerID, 'moveFrom': source, 'moveTo': target})))
+	// });
+	$.ajax({
+		url: baseURL + "/games/"+boardID+"/move",
+		type:"POST",
+		data: JSON.stringify({'id': playerID, 'moveFrom': source, 'moveTo': target}),
+		contentType:"application/json; charset=utf-8",
+		dataType:"json",
+		success: function(data){
+			board.move(source + '-' + target);
+		},
+		error: function(e) {
+			console.log("Server returned a "+ e.status +" "+ e.statusText);
+			if(e.status == 404) {
+				console.log("Board or Page does not exist");
+			}
+			else if(e.status == 400) {
+				console.log("Incorrect Move");
+			}			
 		}
-		else if(e.status == 400) {
-			console.log("Incorrect Move");
-		}
-	})
-	.always(function() {
-		
 	});
-	
-	
 }
 
 
@@ -50,7 +67,7 @@ var getBoard = function() {
 	var statusRequest = $.get( baseURL + "/games/"+boardID+"/status", function(data) {
 		board.clear();
 		$.each(data, function(key, value){
-			if (value == "  " || value === null){
+			if (value == "  " || value == "" || value === null){
 				delete data[key];
 			}
 			// console.log("Key: " + key + " Value: " + value)

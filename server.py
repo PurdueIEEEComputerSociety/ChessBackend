@@ -50,7 +50,7 @@ def index():
 	return app.send_static_file('index.html')
 
 @app.route('/api')
-def index():
+def send_api():
 	return app.send.static_file('api.html')
 
 @app.route('/js/<path:path>')
