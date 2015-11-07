@@ -27,8 +27,8 @@ class game:
 		return ord(move[0].lower()) - 97, int(move[1]) - 1 # value of 'a' is 97
 
 	def revert(self, move):
-		if (1 <= move[0] <= 8) and (1 <= move[1] <= 8):
-			return chr(move[0] + 97) + str(move[1] + 1)
+		if (0 <= move[0] <= 7) and (0 <= move[1] <= 7):
+			return chr(104 - move[0]) + str(move[1] + 1)
 
 
 
@@ -239,14 +239,15 @@ def boardStatus(boardid):
 		return "404 - Please enter a board number between 0 and 99"
 
 	#Stringify the board and return it
-	boardString = ''
+	boardString = [{}]
 	for r in range(0,sideLen):
-		boardString += '|'
+		#boardString += '|'
 		for c in range(0,sideLen):
-			boardString += '%s |' % (games[boardid].board[r][c])
-		boardString += '<br/>'
+			#boardString +='%s:%s |' % (games[boardid].revert((r, c)), games[boardid].board[r][c])
+			boardString[0][games[boardid].revert((r, c))] = games[boardid].board[r][c]
+		#boardString += '<br/>'
 
-	return boardString
+	return jsonify(boardString[0]), 201
 
 if __name__ == '__main__':
 	app.run(debug=True)
