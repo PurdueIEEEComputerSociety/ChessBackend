@@ -1,21 +1,30 @@
+from random import randint
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
 sideLen = 8
 numGames = 100
-boardState = []
-boardLayout = [ 
-'BR','Bk','BB','BQ','BK','BB','Bk','BR',
-'BP','BP','BP','BP','BP','BP','BP','BP',
-'  ','  ','  ','  ','  ','  ','  ','  ',
-'  ','  ','  ','  ','  ','  ','  ','  ',
-'  ','  ','  ','  ','  ','  ','  ','  ',
-'  ','  ','  ','  ','  ','  ','  ','  ',
-'WP','WP','WP','WP','WP','WP','WP','WP',
-'WR','Wk','WB','WK','WQ','WB','Wk','WR']
 
-games = [[[' ' for _ in range(sideLen)] for _ in range(sideLen)] for _ in range(numGames)] # init 100, 8 x 8 boards
+class game:
+	player1 = ''
+	player2 = ''
+	turn = 0
+	boardState = 0
+	board =[[' ' for _ in range(sideLen)] for _ in range(sideLen)]
+
+boardLayout = [ 
+	'BR','Bk','BB','BQ','BK','BB','Bk','BR',
+	'BP','BP','BP','BP','BP','BP','BP','BP',
+	'  ','  ','  ','  ','  ','  ','  ','  ',
+	'  ','  ','  ','  ','  ','  ','  ','  ',
+	'  ','  ','  ','  ','  ','  ','  ','  ',
+	'  ','  ','  ','  ','  ','  ','  ','  ',
+	'WP','WP','WP','WP','WP','WP','WP','WP',
+	'WR','Wk','WB','WK','WQ','WB','Wk','WR'
+]
+
+games = [ game() for i in range(numGames)]
 
 @app.route('/')
 def index():
@@ -25,12 +34,30 @@ def index():
 def initBoard(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
-	idx = 0
-	for r in range(0,sideLen):
-		for c in range(0,sideLen):
-			games[boardid][r][c] = boardLayout[idx]
-			idx += 1	
-	return "Board created!"
+	returnMessage = ""
+
+	if games[boardid].boardState == 0:
+		games[boardid].boardState += 1
+		games[boardid].player1 = hex(randint(0, 43046721))
+		returnMessage += games[boardid].player1
+
+	elif games[boardid].boardState == 1:
+		games[boardid].boardState += 1
+		idx = 0
+		for r in range(0,sideLen):
+			for c in range(0,sideLen):
+				games[boardid].board[r][c] = boardLayout[idx]
+				idx += 1
+		games[boardid].player2 = hex(randint(0, 43046721))
+		returnMessage += games[boardid].player2
+
+	else: 
+		print "Board used, refused"
+		return jsonify({'err': 'Board in use'}), 423
+
+	print "Init on board " + str(boardid) + " was made, giving user message: " + returnMessage
+ 	
+	return jsonify({'id':returnMessage}), 201
 
 @app.route('/games/<int:boardid>/move', methods=['POST'])
 def makeMove(boardid):
@@ -72,7 +99,7 @@ def boardStatus(boardid):
 	for r in range(0,sideLen):
 		boardString += '|'
 		for c in range(0,sideLen):
-			boardString += '%s |' % (games[boardid][r][c])
+			boardString += '%s |' % (games[boardid].board[r][c])
 		boardString += '<br/>'
  
 	return boardString
