@@ -14,7 +14,7 @@ var onDrop = function(source, target, piece, newPos, oldPos, orientation) {
 	// console.log("--------------------");
 	position = board.position();
 	tryMove(source, target, piece[0]);
-	return 'snapback';
+	//return 'snapback';
 };
 
 var cfg = {
@@ -49,6 +49,7 @@ var tryMove = function(source, target, color) {
 			board.move(source + '-' + target);
 		},
 		error: function(e) {
+			board.update();
 			console.log("Server returned a "+ e.status +" "+ e.statusText);
 			if(e.status == 404) {
 				console.log("Board or Page does not exist");
