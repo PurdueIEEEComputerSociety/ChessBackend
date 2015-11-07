@@ -46,7 +46,7 @@ var tryMove = function(source, target, color) {
 		contentType:"application/json; charset=utf-8",
 		dataType:"json",
 		success: function(data){
-			board.move(source + '-' + target);
+			board.update()
 		},
 		error: function(e) {
 			board.position(position);
@@ -57,7 +57,7 @@ var tryMove = function(source, target, color) {
 			}
 			else if(e.status == 400) {
 				console.log("Incorrect Move");
-			}			
+			}
 		}
 	});
 }
@@ -79,13 +79,13 @@ var getBoard = function() {
 		board.position(position);
 	})
 	.done(function() {
-		
+
 	})
 	.fail(function() {
-		
+
 	})
 	.always(function() {
-		
+
 	});
 
 }
