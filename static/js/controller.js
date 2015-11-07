@@ -53,7 +53,7 @@ var getBoard = function() {
 			if (value == "  " || value === null){
 				delete data[key];
 			}
-			console.log("Key: " + key + " Value: " + value)
+			// console.log("Key: " + key + " Value: " + value)
 		});
 		position = data;
 		console.log(data);

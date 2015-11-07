@@ -49,6 +49,10 @@ games = [ game() for i in range(numGames)]
 def index():
 	return app.send_static_file('index.html')
 
+@app.route('/api')
+def index():
+	return app.send.static_file('api.html')
+
 @app.route('/js/<path:path>')
 def send_js(path):
     return send_from_directory('static/js', path)
