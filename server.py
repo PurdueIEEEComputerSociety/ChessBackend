@@ -13,6 +13,7 @@ class game:
 		self.turn = 0
 		self.boardState = 0
 		self.board = [['' for _ in range(sideLen)] for _ in range(sideLen)]
+		self.currentPlayer = 0
 
 	def getPiece(self, x, y):
 		if (0 <= x <= 7) and (0 <= y <= 7):
@@ -112,7 +113,7 @@ def makeMove(boardid):
 	}
 	#.append(move) We should add this object to a list of previous moves
 	#TODO: Sanity check, is move valid
-
+	print move
 	if checkMove(games[boardid], move):
 		moveFrom = games[boardid].convert(move['moveFrom'])
 		moveTo = games[boardid].convert(move['moveTo'])
@@ -121,10 +122,22 @@ def makeMove(boardid):
 
 		games[boardid].setPiece(moveTo[0], moveTo[1], piece)
 		games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
+		games[boardid].currentPlayer = (games[boardid].currentPlayer + 1) % 2
+ 
 	else:
 		return jsonify({'err': 'Bad move'}), 406
 
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK
+
+def isPlayersTurn(game, playerID):
+	if (playerID == game.player1) and (game.currentPlayer is not 0):
+		return False
+	elif (playerID == game.player2) and (game.currentPlayer is not 1):
+		return False
+	elif (playerID == game.player1) or (playerID == game.player2) :
+		return True
+	else:
+		return False
 
 def checkMove(game, move):
 	#move    = x position,               y position
@@ -137,6 +150,13 @@ def checkMove(game, move):
 		return False
 
 	color = piece[0]
+
+	#Make sure the player of the current turn is going 
+	if not isPlayersTurn(game, move['id']):
+		return False
+	#Don't allow player to move the opposite color 
+	if (color is 'w' and game.currentPlayer is not 0) or (color is 'b' and game.currentPlayer is not 1):
+		return False
 
 	print moveFrom
 	print moveTo
