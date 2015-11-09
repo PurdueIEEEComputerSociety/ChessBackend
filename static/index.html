@@ -26,7 +26,18 @@
   </head>
   <body>
   	<div class="title">Chess++</div>
+    <div id="playerTurn" class="turn"></div>
+    <div id="turn" class="turn">W</div>
   	<div id="board1"></div>
+    <button id="initB" onClick="board.init()">Initialize</button>
+    <button onClick="board.update()">Update</button>
+    <div class="onoffswitch">
+        <input type="checkbox" onClick="switchMode()" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+        <label class="onoffswitch-label" for="myonoffswitch">
+            <span class="onoffswitch-inner"></span>
+            <span class="onoffswitch-switch"></span>
+        </label>
+    </div>
     <script type="application/javascript">
     </script>
     <script src="js/controller.js"></script>
