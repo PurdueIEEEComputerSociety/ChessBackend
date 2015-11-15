@@ -13,6 +13,7 @@ class game:
 		self.turn = 0
 		self.boardState = 0
 		self.board = [['' for _ in range(sideLen)] for _ in range(sideLen)]
+		self.currentPlayer = 0
 
 	def getPiece(self, x, y):
 		if (0 <= x <= 7) and (0 <= y <= 7):
@@ -51,7 +52,7 @@ def index():
 
 @app.route('/api')
 def send_api():
-	return app.send.static_file('api.html')
+	return app.send_static_file('api.html')
 
 @app.route('/js/<path:path>')
 def send_js(path):
@@ -70,12 +71,13 @@ def initBoard(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
 
-	returnMessage = ""
+	returnMessage = [{}]
 
 	if games[boardid].boardState == 0:
 		games[boardid].boardState += 1
 		games[boardid].player1 = hex(randint(0, 43046721))
-		returnMessage += games[boardid].player1
+		returnMessage[0]['id'] = games[boardid].player1
+		returnMessage[0]['color'] = 'W'
 
 	elif games[boardid].boardState == 1:
 		games[boardid].boardState += 1
@@ -85,15 +87,16 @@ def initBoard(boardid):
 				games[boardid].board[r][c] = boardLayout[idx]
 				idx += 1
 		games[boardid].player2 = hex(randint(0, 43046721))
-		returnMessage += games[boardid].player2
-
+		returnMessage[0]['id'] = games[boardid].player2
+		returnMessage[0]['color'] = 'B'
 	else:
 		print "Board used, refused"
-		return jsonify({'err': 'Board in use'}), 423
+		returnMessage[0]['err'] = "Board is being used"
+		return jsonify(returnMessage[0]), 423
 
-	print "Init on board " + str(boardid) + " was made, giving user message: " + returnMessage
+	#print "Init on board " + str(boardid) + " was made, giving user message: " + returnMessage
 
-	return jsonify({'id':returnMessage}), 201
+	return jsonify(returnMessage[0]), 201
 
 @app.route('/games/<int:boardid>/move', methods=['POST'])
 def makeMove(boardid):
@@ -129,6 +132,16 @@ def makeMove(boardid):
 
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
+def isPlayersTurn(game, playerID):
+	if (playerID == game.player1) and (game.currentPlayer is not 0):
+		return False
+	elif (playerID == game.player2) and (game.currentPlayer is not 1):
+		return False
+	elif (playerID == game.player1) or (playerID == game.player2) :
+		return True
+	else:
+		return False
+
 def validDirection(game, move):
 
 	moveFrom = game.convert(move['moveFrom'])
@@ -140,6 +153,13 @@ def validDirection(game, move):
 		return False
 
 	color = piece[0]
+
+	#Make sure the player of the current turn is going 
+	if not isPlayersTurn(game, move['id']):
+		return False
+	#Don't allow player to move the opposite color 
+	if (color is 'w' and game.currentPlayer is not 0) or (color is 'b' and game.currentPlayer is not 1):
+		return False
 
 	print moveFrom
 	print moveTo
@@ -264,6 +284,7 @@ def obstructed(game, move):
 
 	return False
 
+
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
 	if boardid < 0  or boardid > 99:
@@ -272,11 +293,8 @@ def boardStatus(boardid):
 	#Stringify the board and return it
 	boardString = [{}]
 	for r in range(0,sideLen):
-		#boardString += '|'
 		for c in range(0,sideLen):
-			#boardString +='%s:%s |' % (games[boardid].revert((r, c)), games[boardid].board[r][c])
 			boardString[0][games[boardid].revert((7-c, 7-r))] = games[boardid].board[r][c]
-		#boardString += '<br/>'
 
 	return jsonify(boardString[0]), 201
 

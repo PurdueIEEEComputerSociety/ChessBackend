@@ -8,6 +8,9 @@ The flask framework can be installed through Python Package Manager using ```pip
 Start the server with ```python server.py```
 The server will now be bound to port 5000 on your localhost
 
+##Default Pages
+The default pages that exist are accessed at '/' and '/api'. The first is a test landing page to interface with the server and the second is the documentation for requests to be sent to the server
+
 ##Usage
 Currently the only 2 interactive endpoints are /games/<ID>/move and /games/<ID>/status where <ID> is a value 0-99 which is the id of a game
 
