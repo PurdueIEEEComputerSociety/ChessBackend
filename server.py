@@ -34,14 +34,14 @@ class game:
 
 
 boardLayout = [
-	'bR','bN','bB','bK','bQ','bB','bN','bR',
+	'bR','bN','bB','bQ','bK','bB','bN','bR',
 	'bP','bP','bP','bP','bP','bP','bP','bP',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'wP','wP','wP','wP','wP','wP','wP','wP',
-	'wR','wN','wB','wK','wQ','wB','wN','wR'
+	'wR','wN','wB','wQ','wK','wB','wN','wR'
 ]
 
 games = [ game() for i in range(numGames)]
@@ -56,15 +56,15 @@ def send_api():
 
 @app.route('/js/<path:path>')
 def send_js(path):
-    return send_from_directory('static/js', path)
+	return send_from_directory('static/js', path)
 
 @app.route('/css/<path:path>')
 def send_css(path):
-    return send_from_directory('static/css', path)
+	return send_from_directory('static/css', path)
 
 @app.route('/img/<path:path>')
 def send_img(path):
-    return send_from_directory('static/img', path)
+	return send_from_directory('static/img', path)
 
 @app.route('/games/<int:boardid>/init', methods=['GET'])
 def initBoard(boardid):
@@ -113,34 +113,36 @@ def makeMove(boardid):
 	}
 	#.append(move) We should add this object to a list of previous moves
 	#TODO: Sanity check, is move valid
-	print move
-	if checkMove(games[boardid], move):
-		moveFrom = games[boardid].convert(move['moveFrom'])
-		moveTo = games[boardid].convert(move['moveTo'])
 
-		piece = games[boardid].getPiece(moveFrom[0], moveFrom[1])
+	if not validDirection(games[boardid], move):
+		return jsonify({'err': 'Move not available'}), 406
 
-		games[boardid].setPiece(moveTo[0], moveTo[1], piece)
-		games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
-		games[boardid].currentPlayer = (games[boardid].currentPlayer + 1) % 2
- 
-	else:
-		return jsonify({'err': 'Bad move'}), 406
+	if obstructed(games[boardid], move):
+		return jsonify({'err', 'Move is obstructed'}), 409
+
+
+
+	moveFrom = games[boardid].convert(move['moveFrom'])
+	moveTo = games[boardid].convert(move['moveTo'])
+
+
+	piece = games[boardid].getPiece(moveFrom[0], moveFrom[1])
+	games[boardid].setPiece(moveTo[0], moveTo[1], piece)
+	games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
+	games[boardid].currentPlayer = (games[boardid].currentPlayer + 1) % 2
 
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
 def isPlayersTurn(game, playerID):
-	if (playerID == game.player1) and (game.currentPlayer is not 0):
-		return False
-	elif (playerID == game.player2) and (game.currentPlayer is not 1):
-		return False
-	elif (playerID == game.player1) or (playerID == game.player2) :
+	if (playerID == game.player1) and (game.currentPlayer is 0):
+		return True
+	elif (playerID == game.player2) and (game.currentPlayer is 1):
 		return True
 	else:
 		return False
 
-def checkMove(game, move):
-	#move    = x position,               y position
+def validDirection(game, move):
+
 	moveFrom = game.convert(move['moveFrom'])
 	moveTo   = game.convert(move['moveTo'])
 
@@ -151,10 +153,12 @@ def checkMove(game, move):
 
 	color = piece[0]
 
-	#Make sure the player of the current turn is going 
+	#Make sure the player of the current turn is going
 	if not isPlayersTurn(game, move['id']):
+		print "Not right ID"
+		print move['id']
 		return False
-	#Don't allow player to move the opposite color 
+	#Don't allow player to move the opposite color
 	if (color is 'w' and game.currentPlayer is not 0) or (color is 'b' and game.currentPlayer is not 1):
 		return False
 
@@ -170,7 +174,12 @@ def checkMove(game, move):
 	if type == 'K':
 		# checks for King
 		print "check king"
-		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
+		xDiff = abs(moveTo[0] - moveFrom[0])
+		yDiff = abs(moveTo[1] - moveFrom[1])
+		if xDiff > 1 or yDiff > 1:
+			return False
+		else:
+			return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
 	if type == 'Q':
 		# checks for Queen
@@ -270,6 +279,12 @@ def checkOrthogonal(moveFrom, moveTo):
 
 	return True
 
+def obstructed(game, move):
+
+
+
+	return False
+
 @app.route('/games/<int:boardid>/turn', methods=['POST'])
 def allowedToPlay(boardid):
 	if boardid < 0  or boardid > 99:
@@ -286,7 +301,7 @@ def allowedToPlay(boardid):
 		return jsonify({'allow':True}), 200
 
 	return jsonify({'allow':False}), 200
- 
+
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
 	if boardid < 0  or boardid > 99:
