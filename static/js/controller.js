@@ -10,7 +10,7 @@ var currentID = "0"; //Working ID
 var mode = "S"; //S is for local game (with server checking) M is for multiplayer (1 side)
 var intervalKeeper; //Keeps track of interval polling for turn checking.
 var allowed = true;
-
+var waiting = false;
 function onDrop(source, target, piece, newPos, oldPos, orientation) {
 	// console.log("Source: " + source);
 	// console.log("Target: " + target);
@@ -161,17 +161,23 @@ function initBoard() {
 }
 
 function turnWait() {
+	allowed = false;
 	intervalKeeper = setInterval(function() {
-		if(allowed) {
-			$("#turn").html("It is your turn.");
-			board.update();
-			allowed = false;
-			clearInterval(intervalKeeper);
+		if(!waiting) {
+			if(allowed) {
+				$("#turn").html("It is your turn.");
+				board.update();
+				allowed = false;
+				clearInterval(intervalKeeper);
+			}
+			else checkTurn();
 		}
-	},1000);
+
+	},30);
 }
 
 function checkTurn() {
+	waiting = true;
 	$.ajax({
 		url: baseURL + "/games/"+boardID+"/turn",
 		type:"POST",
@@ -179,12 +185,14 @@ function checkTurn() {
 		contentType:"application/json; charset=utf-8",
 		dataType:"json",
 		success: function(data){
+			//console.log(data);
 			if(data.allow) {
 				allowed = true;
 			}
 			else {
 				allowed = false;
 			}
+			waiting = false;
 		},
 		error: function(e) {
 		}
