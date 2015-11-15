@@ -293,9 +293,19 @@ def allowedToPlay(boardid):
 	if not request.json:
 		return jsonify({'err': 'Not json type'}), 400
 
+			
 	player = {
 		'id' : request.json['id'],
 	}
+
+	if games[boardid].boardState == 3: 
+		if player['id']	== games[boardid].player1:
+			games[boardid].player1 = ''
+		elif player['id'] == games[boardid].player2:
+			games[boardid].player2 = ''
+		
+		if games[boardid].player1 == games[boardid].player2 == '':
+			games[boardid].boardState = 0 
 
 	if isPlayersTurn(games[boardid], player['id']):
 		return jsonify({'allow':True}), 200
