@@ -270,6 +270,23 @@ def checkOrthogonal(moveFrom, moveTo):
 
 	return True
 
+@app.route('/games/<int:boardid>/turn', methods=['POST'])
+def allowedToPlay(boardid):
+	if boardid < 0  or boardid > 99:
+		return jsonify({'err': 'Please enter a board number between 0 and 99'}), 404
+
+	if not request.json:
+		return jsonify({'err': 'Not json type'}), 400
+
+	player = {
+		'id' : request.json['id'],
+	}
+
+	if isPlayersTurn(games[boardid], player['id']):
+		return jsonify({'allow':True}), 200
+
+	return jsonify({'allow':False}), 200
+ 
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
 	if boardid < 0  or boardid > 99:
