@@ -56,15 +56,15 @@ def send_api():
 
 @app.route('/js/<path:path>')
 def send_js(path):
-    return send_from_directory('static/js', path)
+	return send_from_directory('static/js', path)
 
 @app.route('/css/<path:path>')
 def send_css(path):
-    return send_from_directory('static/css', path)
+	return send_from_directory('static/css', path)
 
 @app.route('/img/<path:path>')
 def send_img(path):
-    return send_from_directory('static/img', path)
+	return send_from_directory('static/img', path)
 
 @app.route('/games/<int:boardid>/init', methods=['GET'])
 def initBoard(boardid):
@@ -126,9 +126,10 @@ def makeMove(boardid):
 	moveTo = games[boardid].convert(move['moveTo'])
 
 
-        piece = games[boardid].getPiece(moveFrom[0], moveFrom[1])
+	piece = games[boardid].getPiece(moveFrom[0], moveFrom[1])
 	games[boardid].setPiece(moveTo[0], moveTo[1], piece)
 	games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
+	games[boardid].currentPlayer = (games[boardid].currentPlayer + 1) % 2
 
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
@@ -154,10 +155,12 @@ def validDirection(game, move):
 
 	color = piece[0]
 
-	#Make sure the player of the current turn is going 
+	#Make sure the player of the current turn is going
 	if not isPlayersTurn(game, move['id']):
+		print "Not right ID"
+		print move['id']
 		return False
-	#Don't allow player to move the opposite color 
+	#Don't allow player to move the opposite color
 	if (color is 'w' and game.currentPlayer is not 0) or (color is 'b' and game.currentPlayer is not 1):
 		return False
 
