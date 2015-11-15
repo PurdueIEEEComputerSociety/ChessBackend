@@ -134,11 +134,9 @@ def makeMove(boardid):
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
 def isPlayersTurn(game, playerID):
-	if (playerID == game.player1) and (game.currentPlayer is not 0):
-		return False
-	elif (playerID == game.player2) and (game.currentPlayer is not 1):
-		return False
-	elif (playerID == game.player1) or (playerID == game.player2) :
+	if (playerID == game.player1) and (game.currentPlayer is 0):
+		return True
+	elif (playerID == game.player2) and (game.currentPlayer is 1):
 		return True
 	else:
 		return False
