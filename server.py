@@ -290,10 +290,13 @@ def allowedToPlay(boardid):
 	if boardid < 0  or boardid > 99:
 		return jsonify({'err': 'Please enter a board number between 0 and 99'}), 404
 
+	if games[boardid].boardState == 0 or games[boardid].boardState == 1:
+		return jsonify({'allow':False, 'err': 'Board not ready!'}), 200
+
 	if not request.json:
 		return jsonify({'err': 'Not json type'}), 400
 
-			
+				
 	player = {
 		'id' : request.json['id'],
 	}
