@@ -17,7 +17,7 @@ class game:
 
 	def getPiece(self, x, y):
 		if (0 <= x <= 7) and (0 <= y <= 7):
-			return self.board[7-y][x]
+			return self.board[7-y][x].strip()
 		return ""
 
 	def setPiece(self, x, y, piece):
@@ -114,13 +114,16 @@ def makeMove(boardid):
 	#.append(move) We should add this object to a list of previous moves
 	#TODO: Sanity check, is move valid
 
+	#Make sure the player of the current turn is going
+	if not isPlayersTurn(games[boardid], move['id']):
+		print "Not right ID"
+		return jsonify({'err': 'Not your turn'}), 403
+
 	if not validDirection(games[boardid], move):
 		return jsonify({'err': 'Move not available'}), 406
 
 	if obstructed(games[boardid], move):
-		return jsonify({'err', 'Move is obstructed'}), 409
-
-
+		return jsonify({'err': 'Move is obstructed'}), 409
 
 	moveFrom = games[boardid].convert(move['moveFrom'])
 	moveTo = games[boardid].convert(move['moveTo'])
@@ -153,11 +156,6 @@ def validDirection(game, move):
 
 	color = piece[0]
 
-	#Make sure the player of the current turn is going
-	if not isPlayersTurn(game, move['id']):
-		print "Not right ID"
-		print move['id']
-		return False
 	#Don't allow player to move the opposite color
 	if (color is 'w' and game.currentPlayer is not 0) or (color is 'b' and game.currentPlayer is not 1):
 		return False
@@ -280,8 +278,57 @@ def checkOrthogonal(moveFrom, moveTo):
 	return True
 
 def obstructed(game, move):
+	# assume move is correct
+	moveFrom = game.convert(move['moveFrom'])
+	moveTo   = game.convert(move['moveTo'])
 
+	piece = game.getPiece(moveFrom[0], moveFrom[1])
 
+	if not piece:
+		return False
+
+        if piece[1] is 'N':
+            return False
+
+	color = piece[0]
+
+	print "Check obstructed"
+	print color
+	print moveFrom
+	print moveTo
+
+	xDirection =  0
+	if moveTo[0] - moveFrom[0] < 0:
+		xDirection = -1
+
+	if moveTo[0] - moveFrom[0] > 0:
+		xDirection = 1
+
+	yDirection =  0
+	if moveTo[1] - moveFrom[1] < 0:
+		yDirection = -1
+
+	if moveTo[1] - moveFrom[1] > 0:
+		yDirection = 1
+
+	steps = max(abs(moveFrom[0] - moveTo[0]), abs(moveFrom[1] - moveTo[1]))
+	start = moveFrom
+
+	print "Check these"
+	for offset in range(1, steps+1):
+		checkPiece = game.getPiece(start[0] + offset*xDirection, start[1] + offset*yDirection)
+		print (start[0] + offset*xDirection, start[1] + offset*yDirection, checkPiece)
+                if checkPiece is not "":
+
+                    if offset is steps:
+                            if checkPiece[0] is color:
+                                    print "Same color at last place"
+                                    return True
+                            else:
+                                    print "CAPTURE!"
+                                    print checkPiece
+                    else:
+                        return True
 
 	return False
 
