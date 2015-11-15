@@ -33,14 +33,14 @@ class game:
 
 
 boardLayout = [
-	'bR','bN','bB','bK','bQ','bB','bN','bR',
+	'bR','bN','bB','bQ','bK','bB','bN','bR',
 	'bP','bP','bP','bP','bP','bP','bP','bP',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'  ','  ','  ','  ','  ','  ','  ','  ',
 	'wP','wP','wP','wP','wP','wP','wP','wP',
-	'wR','wN','wB','wK','wQ','wB','wN','wR'
+	'wR','wN','wB','wQ','wK','wB','wN','wR'
 ]
 
 games = [ game() for i in range(numGames)]
@@ -111,21 +111,26 @@ def makeMove(boardid):
 	#.append(move) We should add this object to a list of previous moves
 	#TODO: Sanity check, is move valid
 
-	if checkMove(games[boardid], move):
-		moveFrom = games[boardid].convert(move['moveFrom'])
-		moveTo = games[boardid].convert(move['moveTo'])
+	if not validDirection(games[boardid], move):
+		return jsonify({'err': 'Move not available'}), 406
 
-		piece = games[boardid].getPiece(moveFrom[0], moveFrom[1])
+	if obstructed(games[boardid], move):
+		return jsonify({'err', 'Move is obstructed'}), 409
 
-		games[boardid].setPiece(moveTo[0], moveTo[1], piece)
-		games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
-	else:
-		return jsonify({'err': 'Bad move'}), 406
+
+
+	moveFrom = games[boardid].convert(move['moveFrom'])
+	moveTo = games[boardid].convert(move['moveTo'])
+
+
+        piece = games[boardid].getPiece(moveFrom[0], moveFrom[1])
+	games[boardid].setPiece(moveTo[0], moveTo[1], piece)
+	games[boardid].setPiece(moveFrom[0], moveFrom[1], "")
 
 	return jsonify({'move': move}), 201 #Return JSON move followed by OK
 
-def checkMove(game, move):
-	#move    = x position,               y position
+def validDirection(game, move):
+
 	moveFrom = game.convert(move['moveFrom'])
 	moveTo   = game.convert(move['moveTo'])
 
@@ -148,7 +153,12 @@ def checkMove(game, move):
 	if type == 'K':
 		# checks for King
 		print "check king"
-		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
+		xDiff = abs(moveTo[0] - moveFrom[0])
+		yDiff = abs(moveTo[1] - moveFrom[1])
+		if xDiff > 1 or yDiff > 1:
+			return False
+		else:
+			return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
 	if type == 'Q':
 		# checks for Queen
@@ -247,6 +257,12 @@ def checkOrthogonal(moveFrom, moveTo):
 		return False
 
 	return True
+
+def obstructed(game, move):
+
+
+
+	return False
 
 @app.route('/games/<int:boardid>/status', methods=['GET'])
 def boardStatus(boardid):
