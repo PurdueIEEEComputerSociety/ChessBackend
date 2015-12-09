@@ -1,7 +1,9 @@
 from random import randint
 from flask import Flask, jsonify, request, url_for, send_from_directory, render_template
+from flask.ext.cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 sideLen = 8
 numGames = 100
@@ -48,23 +50,7 @@ games = [ game() for i in range(numGames)]
 
 @app.route('/')
 def index():
-	return app.send_static_file('index.html')
-
-@app.route('/api')
-def send_api():
 	return app.send_static_file('api.html')
-
-@app.route('/js/<path:path>')
-def send_js(path):
-	return send_from_directory('static/js', path)
-
-@app.route('/css/<path:path>')
-def send_css(path):
-	return send_from_directory('static/css', path)
-
-@app.route('/img/<path:path>')
-def send_img(path):
-	return send_from_directory('static/img', path)
 
 @app.route('/games/<int:boardid>/init', methods=['GET'])
 def initBoard(boardid):
@@ -217,6 +203,13 @@ def validDirection(game, move):
 		print "check pawn"
 		if color == 'w':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
+				if abs(moveTo[0] - moveFrom[0]) == 1 and moveTo[1] == moveFrom[1]+1:
+					checkPiece = game.getPiece(moveTo[0], moveTo[1])
+					print checkPiece
+					if checkPiece is not "" and checkPiece[0] is 'b':
+						print "Possible capture?"
+						return True
+
 				return False
 
 			# if white pawn is in starting pos
@@ -233,6 +226,13 @@ def validDirection(game, move):
 
 		elif color == 'b':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
+				if abs(moveTo[0] - moveFrom[0]) == 1 and moveTo[1] == moveFrom[1]-1:
+					checkPiece = game.getPiece(moveTo[0], moveTo[1])
+					print checkPiece
+					if checkPiece is not "" and checkPiece[0] is 'w':
+						print "Possible capture?"
+						return True
+
 				return False
 
 			# if black pawn is in starting pos
@@ -292,6 +292,12 @@ def obstructed(game, move):
 
 	color = piece[0]
 
+	if piece[1] is 'P':
+		if abs(moveFrom[0] - moveTo[0]) is 0:
+			checkPiece = game.getPiece(moveTo[0], moveTo[1])
+			if checkPiece is not "":
+				return True
+
 	print "Check obstructed"
 	print color
 	print moveFrom
@@ -321,12 +327,12 @@ def obstructed(game, move):
                 if checkPiece is not "":
 
                     if offset is steps:
-                            if checkPiece[0] is color:
-                                    print "Same color at last place"
-                                    return True
-                            else:
-                                    print "CAPTURE!"
-                                    print checkPiece
+						if checkPiece[0] is color:
+							print "Same color at last place"
+							return True
+						else:
+							print "CAPTURE!"
+							print checkPiece
                     else:
                         return True
 
@@ -367,13 +373,18 @@ def boardStatus(boardid):
 	if boardid < 0  or boardid > 99:
 		return "404 - Please enter a board number between 0 and 99"
 
-	#Stringify the board and return it
-	boardString = [{}]
-	for r in range(0,sideLen):
-		for c in range(0,sideLen):
-			boardString[0][games[boardid].revert((7-c, 7-r))] = games[boardid].board[r][c]
+	coords = request.args.get("coords")
+	if coords is not None:
+		print coords
 
-	return jsonify(boardString[0]), 201
+		#Stringify the board and return it
+		boardString = [{}]
+		for r in range(0,sideLen):
+			for c in range(0,sideLen):
+				boardString[0][games[boardid].revert((7-c, 7-r))] = games[boardid].board[r][c]
+		return jsonify(boardString[0]), 201
+
+	return jsonify(board=games[boardid].board), 201
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host='10.10.10.10')

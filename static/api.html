@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <title>PIEEE Chess</title>
     <meta name="description" content="Chess++ API">
-    <meta name="author" content="John Lee">
 
     <!-- Mobile Specific Metas
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -14,15 +13,68 @@
 
     <!-- CSS
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/custom.css">
-    <link rel="stylesheet" href="css/chessboard-0.3.0.css">
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Lato:600,400,300);
+		html, body {
+			height: auto;
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			padding: 0;
+			font-family: Avenir, Lato, Helvetica, Arial, sans-serif;
+			font-weight: 400;
+			letter-spacing: 0;
+			color: #d3d3d3;
+			background: #333;
+			-webkit-font-smoothing: antialiased;
+			text-rendering: optimizeLegibility;
+		}
+
+		a:link, a:visited, a:hover, a:active {
+			text-decoration: none;
+			color: #fff;
+		}
+		a:link, a:hover, a:active, a:visited { text-decoration: none; color: inherit; outline: none;}
+		html {
+			box-sizing: border-box;
+		}
+		*, *:before, *:after {
+			box-sizing: inherit;
+		}
+		.title {
+			text-align: center;
+			margin: 0 auto;
+			font-size: 5em;
+			padding: 20px;
+		}
+
+		thead > tr > th {
+			padding: 1em;
+		}
+		table {
+			color: #333;
+			width: 90%;
+			margin: 0em auto;
+		}
+		td{
+			text-align: center;
+			font-size: 1em;
+			padding: 1em;
+		}
+
+
+		td:nth-child(2n) {
+			background: rgba(0,0,0,0.05);
+		}
+
+		tr:nth-child(2n) {
+			background: rgba(0,0,0,0.05);
+			color: #111;
+		}
+	</style>
 
     <!-- Scripts
     –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="js/chessboard-0.3.0.min.js"></script>
-
   </head>
   <body style="background: #d3d3d3;">
 
