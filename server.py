@@ -13,11 +13,11 @@ def isPlayersTurn(game, playerID):
 		return True
 	elif (playerID == game.player2) and (game.currentPlayer is 1):
 		return True
-	
+
 	return False
 
 #
-# Return the api documentation on / 
+# Return the api documentation on /
 #
 @app.route('/')
 def index():
@@ -112,19 +112,31 @@ def allowedToPlay(boardid):
 	if not request.json:
 		return jsonify({'err': 'Not json type'}), 400
 
-				
+
 	player = {
 		'id' : request.json['id'],
 	}
 
-	if games[boardid].boardState == 3: 
+	if games[boardid].boardState == 3:
+		returnMessage = jsonify({'allow':False, 'won':False, 'gameover':True}), 200
 		if player['id']	== games[boardid].player1:
 			games[boardid].player1 = ''
+			if games[boardid].winner == 'w':
+				returnMessage = jsonify({'allow':False, 'won':True, 'gameover':True}), 200
 		elif player['id'] == games[boardid].player2:
 			games[boardid].player2 = ''
-		
+			if games[boardid].winner == 'b':
+				returnMessage =  jsonify({'allow':False, 'won':True, 'gameover':True}), 200
+
 		if games[boardid].player1 == games[boardid].player2 == '':
-			games[boardid].boardState = 0 
+			games[boardid].boardState = 0
+			idx = 0
+			for r in range(0,sideLen):
+				for c in range(0,sideLen):
+					games[boardid].board[r][c] = boardLayout[idx]
+					idx += 1
+
+		return returnMessage
 
 	if isPlayersTurn(games[boardid], player['id']):
 		return jsonify({'allow':True}), 200
@@ -152,4 +164,4 @@ def boardStatus(boardid):
 	return jsonify(board=games[boardid].board), 201
 
 if __name__ == '__main__':
-	app.run(host='10.10.10.10')
+	app.run(debug=True)

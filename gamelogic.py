@@ -9,6 +9,7 @@ class game:
 		self.boardState = 0
 		self.board = [['' for _ in range(sideLen)] for _ in range(sideLen)]
 		self.currentPlayer = 0
+		self.winner = ''
 
 	def getPiece(self, x, y):
 		if (0 <= x <= 7) and (0 <= y <= 7):
@@ -182,8 +183,8 @@ def obstructed(game, move):
 	if not piece:
 		return False
 
-        if piece[1] is 'N':
-            return False
+		if piece[1] is 'N':
+			return False
 
 	color = piece[0]
 
@@ -224,6 +225,7 @@ def obstructed(game, move):
 					if checkPiece[1] is 'K':
 						print "GAME OVER"
 						game.boardState = 3
+						game.winner = color
 			else:
 				return True
 
