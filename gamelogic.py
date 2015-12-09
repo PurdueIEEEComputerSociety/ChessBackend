@@ -55,12 +55,8 @@ def validDirection(game, move):
 	if (color is 'w' and game.currentPlayer is not 0) or (color is 'b' and game.currentPlayer is not 1):
 		return False
 
-	print moveFrom
-	print moveTo
-	print piece
 
 	if color != 'w' and color != 'b':
-		print "Color is wrong somehow"
 		return False
 
 	type = piece[1]
@@ -76,15 +72,12 @@ def validDirection(game, move):
 
 	if type == 'Q':
 		# checks for Queen
-		print "check queen"
 		return checkOrthogonal(moveFrom, moveTo) or checkDiagonal(moveFrom, moveTo)
 
 	if type == 'N':
 		# checks for Knight
-		print "check knight"
 		xDiff = abs(moveTo[0] - moveFrom[0])
 		yDiff = abs(moveTo[1] - moveFrom[1])
-		print (xDiff, yDiff)
 
 		if xDiff == 0 and yDiff == 0:
 			return False
@@ -99,24 +92,19 @@ def validDirection(game, move):
 
 	if type == 'B':
 		# checks for Bishop
-		print "check bishop"
 		return checkDiagonal(moveFrom, moveTo)
 
 	if type == 'R':
 		# checks for Rook
-		print "check rook"
 		return checkOrthogonal(moveFrom, moveTo)
 
 	if type == 'P':
 		# Check white pawn
-		print "check pawn"
 		if color == 'w':
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				if abs(moveTo[0] - moveFrom[0]) == 1 and moveTo[1] == moveFrom[1]+1:
 					checkPiece = game.getPiece(moveTo[0], moveTo[1])
-					print checkPiece
 					if checkPiece is not "" and checkPiece[0] is 'b':
-						print "Possible capture?"
 						return True
 
 				return False
@@ -137,9 +125,7 @@ def validDirection(game, move):
 			if moveTo[0] != moveFrom[0]: #make sure X pos is the same
 				if abs(moveTo[0] - moveFrom[0]) == 1 and moveTo[1] == moveFrom[1]-1:
 					checkPiece = game.getPiece(moveTo[0], moveTo[1])
-					print checkPiece
 					if checkPiece is not "" and checkPiece[0] is 'w':
-						print "Possible capture?"
 						return True
 
 				return False
@@ -207,10 +193,6 @@ def obstructed(game, move):
 			if checkPiece is not "":
 				return True
 
-	print "Check obstructed"
-	print color
-	print moveFrom
-	print moveTo
 
 	xDirection =  0
 	if moveTo[0] - moveFrom[0] < 0:
@@ -229,20 +211,20 @@ def obstructed(game, move):
 	steps = max(abs(moveFrom[0] - moveTo[0]), abs(moveFrom[1] - moveTo[1]))
 	start = moveFrom
 
-	print "Check these"
 	for offset in range(1, steps+1):
 		checkPiece = game.getPiece(start[0] + offset*xDirection, start[1] + offset*yDirection)
-		print (start[0] + offset*xDirection, start[1] + offset*yDirection, checkPiece)
-                if checkPiece is not "":
+		if checkPiece is not "":
 
-                    if offset is steps:
-						if checkPiece[0] is color:
-							print "Same color at last place"
-							return True
-						else:
-							print "CAPTURE!"
-							print checkPiece
-                    else:
-                        return True
+			if offset is steps:
+				if checkPiece[0] is color:
+					return True
+				else:
+					print "CAPTURE!"
+					print checkPiece
+					if checkPiece[1] is 'K':
+						print "GAME OVER"
+						game.boardState = 3
+			else:
+				return True
 
 	return False

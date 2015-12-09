@@ -52,7 +52,6 @@ def initBoard(boardid):
 		returnMessage[0]['id'] = games[boardid].player2
 		returnMessage[0]['color'] = 'B'
 	else:
-		print "Board used, refused"
 		returnMessage[0]['err'] = "Board is being used"
 		return jsonify(returnMessage[0]), 423
 
@@ -80,7 +79,6 @@ def makeMove(boardid):
 
 	#Make sure the player of the current turn is going
 	if not isPlayersTurn(games[boardid], move['id']):
-		print "Not right ID"
 		return jsonify({'err': 'Not your turn'}), 403
 
 	if not validDirection(games[boardid], move):
@@ -143,7 +141,6 @@ def boardStatus(boardid):
 
 	coords = request.args.get("coords")
 	if coords is not None:
-		print coords
 
 		#Stringify the board and return it
 		boardString = [{}]
